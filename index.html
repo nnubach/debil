@@ -1,1 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub API Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #message {
+            margin-bottom: 10px;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
 
+    <h1>GitHub API Example</h1>
+
+    <form id="messageForm">
+        <label for="message">Введите сообщение:</label>
+        <input type="text" id="message" name="message" required>
+        <button type="submit">Отправить</button>
+    </form>
+
+    <div id="output"></div>
+
+    <script>
+        document.getElementById('messageForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // Получаем введенное сообщение
+            const message = document.getElementById('message').value;
+
+            // Токен доступа к GitHub (замените на ваш)
+            const token = 'YOUR_GITHUB_TOKEN';
+
+            // Репозиторий, в котором будем создавать issue
+            const repoOwner = 'OWNER'; // Укажите владельца репозитория
+            const repoName = 'REPO_NAME'; // Укажите имя репозитория
+
+            // URL API для создания issue
+            const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/issues`;
+
+            // Отправляем запрос на создание issue
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: 'Новое сообщение',
+                    body: message,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Выводим информацию о созданном issue
+                document.getElementById('output').innerHTML = `
+                    <p>Сообщение успешно отправлено!</p>
+                    <p>Тема: <a href="${data.html_url}" target="_blank">${data.title}</a></p>
+                    <p>Описание: ${data.body}</p>
+                `;
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                document.getElementById('output').innerHTML = '<p>Произошла ошибка при отправке сообщения.</p>';
+            });
+        });
+    </script>
+
+</body>
+</html>
